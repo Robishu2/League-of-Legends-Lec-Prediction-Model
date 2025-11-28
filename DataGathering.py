@@ -55,7 +55,7 @@ def lec_games(respons):
 
     # rename empty column names
     df = df.rename(columns={'Unnamed: 1': 'home_team', 'Unnamed: 3': 'away_team', 'Unnamed: 4': 'type_of_game'})
-    
+
     ls = table.find_all('a', href=True, title=True)
     games_df = []
 
@@ -64,11 +64,11 @@ def lec_games(respons):
         game_teams = item['title']
         games_df.append((game_url, game_teams))
 
-    games_df = pd.DataFrame(games_df, columns=['game_url', 'game_teams']) 
-    
+    games_df = pd.DataFrame(games_df, columns=['game_url', 'game_teams'])
+
     return df, games_df
 
-def get_game_info(game_df):
+def get_game_info(games_df, headers):
     game_info = pd.DataFrame()
 
     for idx, val in games_df.iterrows():
@@ -106,7 +106,7 @@ def get_game_info(game_df):
         flat['Game'] = teams
 
         game_info = pd.concat([game_info, flat], axis=0)
-        
+
     return game_info
 
 def get_lec_links():
@@ -141,21 +141,22 @@ def get_lec_links():
 
     return lec_links
 
-urls = get_lec_links()
+def request_data():
+    urls = get_lec_links()
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-}
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
 
-lec_df = pd.DataFrame()
+    lec_df = pd.DataFrame()
 
-for url in urls:
-    respons = requests.get(url)
+    for url in urls:
+        respons = requests.get(url)
 
-    df, games_df = lec_games(respons)
-    game_info = get_game_info(games_df)
-    df_games = df.merge(game_info, on='Game')
+        df, games_df = lec_games(respons)
+        game_info = get_game_info(games_df, headers=headers)
+        df_games = df.merge(game_info, on='Game')
 
-    lec_df = pd.concat([lec_df, df_games], axis=0)
+        lec_df = pd.concat([lec_df, df_games], axis=0)
 
-lec_df.to_csv('lec_df.csv')
+    return lec_df
