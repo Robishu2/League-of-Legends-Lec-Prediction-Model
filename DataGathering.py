@@ -157,3 +157,5 @@ for url in urls:
     df_games = df.merge(game_info, on='Game')
 
     lec_df = pd.concat([lec_df, df_games], axis=0)
+
+lec_df.to_csv('lec_df.csv')
