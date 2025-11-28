@@ -98,7 +98,7 @@ def get_game_info(games_df, headers):
         temp = temp.set_index(temp.columns[0])
 
         temp.loc['champs'] = champs
-        temp.columns = [f"{x}_home" if idx <= 4 else f"{x}_away" for idx, x in enumerate(temp.columns)]
+        temp.columns = [f"{x}_home" if i <= 4 else f"{x}_away" for i, x in enumerate(temp.columns)]
 
         flat = temp.T.stack().to_frame().T
         flat.columns = [f'{col}_{idx}' for idx, col in flat.columns]
