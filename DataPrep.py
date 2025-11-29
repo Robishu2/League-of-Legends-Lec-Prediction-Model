@@ -6,9 +6,17 @@ def add_lags(df, home_cols, away_cols, number_of_lags):
     lag_dfs = []
     for i in range(1, number_of_lags + 1):
         for home_col in home_cols:
-            lag_dfs.append(df.groupby('home_team')[home_col].shift(-i).rename(f'{home_col}_lag{i}'))
+            lag_dfs.append(
+                df.groupby('home_team', observed=False)[home_col]
+                  .shift(-i)
+                  .rename(f'{home_col}_lag{i}')
+            )
         for away_col in away_cols:
-            lag_dfs.append(df.groupby('away_team')[away_col].shift(-i).rename(f'{away_col}_lag{i}'))
+            lag_dfs.append(
+                df.groupby('away_team', observed=False)[away_col]
+                  .shift(-i)
+                  .rename(f'{away_col}_lag{i}')
+            )
 
     df = pd.concat([df] + lag_dfs, axis=1)
 
