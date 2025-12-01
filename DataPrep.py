@@ -34,11 +34,11 @@ def add_lags(df, home_cols, away_cols, number_of_lags):
     df = df.copy().reset_index(drop=True)
     lag_cols = {}
 
-    # ---- Get unique teams ----
+    # Get unique teams names
     teams = set(df['home_team']).union(df['away_team'])
 
     for team in teams:
-        # ---- Build long-format team history ----
+        # Build a long dataframe with both home and away teams stats
         home_part = df.loc[df['home_team'] == team, home_cols].copy()
         home_part['original_index'] = home_part.index
 
@@ -50,7 +50,7 @@ def add_lags(df, home_cols, away_cols, number_of_lags):
         # Ensure chronological newest → oldest
         long_df = long_df.sort_values('original_index')
 
-        # ---- Compute lag features efficiently ----
+        # Compute lag features
         lag_dict = {}
 
         for col in home_cols:
@@ -63,11 +63,11 @@ def add_lags(df, home_cols, away_cols, number_of_lags):
                 lag_name = f"{col}_lag{lag}"
                 lag_dict[lag_name] = series.shift(-lag).values
 
-        # Add all lag columns in one concat (no fragmentation)
+        # Add all lag columns in one concat
         lag_block = pd.DataFrame(lag_dict, index=long_df.index)
         long_df = pd.concat([long_df, lag_block], axis=1)
 
-        # ---- Map lag features back to main df ----
+        # Map lag features back to main df
         for col in home_cols:
             for lag in range(1, number_of_lags + 1):
 

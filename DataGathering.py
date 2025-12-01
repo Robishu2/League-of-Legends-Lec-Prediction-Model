@@ -63,7 +63,7 @@ def get_game_info(games_df, headers):
 
         tables = soup.find_all('table')[0]
 
-        df_list = pd.read_html(StringIO(str(tables)))   # <-- UPDATED
+        df_list = pd.read_html(StringIO(str(tables)))
 
         imgs = tables.find_all('img')
         champs = [img['alt'] for img in imgs if img.has_attr('alt')]
